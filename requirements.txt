@@ -1,0 +1,6 @@
+tensorflow_gpu==1.6.0
+requests==2.18.4
+scipy==1.0.0
+numpy==1.14.3
+scikit_learn==0.19.1
+tensorflow==1.6.0
