@@ -3,7 +3,7 @@
 
 Source code and dataset for [EMNLP 2018](http://emnlp2018.org) paper: [HyTE: Hyperplane-based Temporally aware Knowledge Graph Embedding](http://talukdar.net/papers/emnlp2018_HyTE.pdf).
 
-![](https://github.com/malllabiisc/HyTE/blob/master/time_proj.png =100x20)
+![](https://github.com/malllabiisc/HyTE/blob/master/time_proj.png =100x)
 *Overview of HyTE (proposed method). a temporally aware
 KG embedding method which explicitly incorporates time in the entity-relation space by
 stitching each timestamp with a corresponding hyperplane. HyTE not only performs KG
