@@ -3,7 +3,7 @@
 
 Source code and dataset for [EMNLP 2018](http://emnlp2018.org) paper: [HyTE: Hyperplane-based Temporally aware Knowledge Graph Embedding](http://talukdar.net/papers/emnlp2018_HyTE.pdf).
 
-![](https://github.com/malllabiisc/HyTE/blob/master/time_proj.png)
+![](https://github.com/malllabiisc/HyTE/blob/master/time_proj.png ==250x250)
 *Overview of HyTE (proposed method). a temporally aware
 KG embedding method which explicitly incorporates time in the entity-relation space by
 stitching each timestamp with a corresponding hyperplane. HyTE not only performs KG
@@ -26,7 +26,7 @@ inference using temporal guidance, but also predicts temporal scopes for relatio
 * After installing python dependencies from `requirements.txt`, execute `sh setup.sh` for downloading GloVe embeddings.
 
 * `time_proj.py` contains TensorFlow (1.x) based implementation of HyTE (proposed method). 
-* To start training: 
+* To start training:
   ```shell
   python time_proj.py -data data/nyt_processed_data.pkl -class 10 -name MODEL_NAME -test_freq 25 -<other_optins> ...
   ```
