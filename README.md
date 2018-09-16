@@ -32,7 +32,7 @@ inference using temporal guidance, but also predicts temporal scopes for relatio
   ```
 *  Some of the important Available options include:
   ```shell
-  	'-data_type' default ='yago', choices = ['yago','wiki_data'], help ='dataset to choose'
+    '-data_type' default ='yago', choices = ['yago','wiki_data'], help ='dataset to choose'
 	'-version',  default = 'large', choices = ['large','small'], help = 'data version to choose'
 	'-test_freq', 	 default = 25,   	type=int, 	help='testing frequency'
 	'-neg_sample', 	 default = 5,   	type=int, 	help='negative samples for training'
@@ -52,7 +52,7 @@ inference using temporal guidance, but also predicts temporal scopes for relatio
 * After trainig start validation/test. Use the same model name and test frequency used at training as arguments for the following evalutation--
 * For getting MR and hit@10 for head and tail prediction:
  ```shell
- 	python result_eval.py -model MODEL_NAME  -test_freq 25
+    python result_eval.py -model MODEL_NAME  -test_freq 25
  ```
 * For getting MR and hit@10 for relation prediction:
 ```shell
