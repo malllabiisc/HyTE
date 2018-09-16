@@ -1,7 +1,7 @@
 # HyTE
 ## HyTE: Hyperplane-based Temporally aware Knowledge Graph Embedding
 
-Source code and dataset for [EMNLP 2018](http://emnlp2018.org) paper: [HyTE: Hyperplane-based Temporally aware Knowledge Graph Embedding](http://malllabiisc.github.io/publications/).
+Source code and dataset for [EMNLP 2018](http://emnlp2018.org) paper: [HyTE: Hyperplane-based Temporally aware Knowledge Graph Embedding](http://talukdar.net/papers/emnlp2018_HyTE.pdf).
 
 ![](https://github.com/malllabiisc/HyTE/blob/master/time_proj.png)
 *Overview of HyTE (proposed method). a temporally aware
@@ -16,9 +16,9 @@ inference using temporal guidance, but also predicts temporal scopes for relatio
 
 ### Dataset:
 
-* Download the processed version (includes dependency and temporal graphs of each document) of [WikiData](To be shared) and [YAGO](https://drive.google.com/open?id=1tll04ZBooB3Mohm6It-v8MBcjMCC3Y1w) datasets.
-* Unzip the `.pkl` file in `data` directory.
-* Documents are originally taken from YAGO(share yago's web address) and Wikidata(share wiki data website).
+* Download the processed version of [WikiData and YAGO](https://drive.google.com/open?id=1S0dcMDXVZp8CFSCMojkBQI1gCva8Dm-0) datasets.
+* Unzip the `.zip` file in `data` directory.
+* Documents are originally taken from [YAGO](https://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/yago/) and [Wikidata](https://www.wikidata.org/wiki/Wikidata:Main_Page).
 
 
 ### Usage:
@@ -28,7 +28,7 @@ inference using temporal guidance, but also predicts temporal scopes for relatio
 * `time_proj.py` contains TensorFlow (1.x) based implementation of HyTE (proposed method). 
 * To start training: 
   ```shell
-  python time_proj.py -data data/nyt_processed_data.pkl -class 10 -name test_run -<other_optins> ...
+  python time_proj.py -data data/nyt_processed_data.pkl -class 10 -name MODEL_NAME -test_freq 25 -<other_optins> ...
   ```
 *  Some of the important Available options include:
   ```shell
@@ -47,9 +47,18 @@ inference using temporal guidance, but also predicts temporal scopes for relatio
 	'-inp_dim',  dest="inp_dim", 	default = 128,   	type=int, 	help='')
 	'-L1_flag',  dest="L1_flag", 	action='store_false',   	 	help='Hidden state dimension of FC layer'
    ```
-* After trainig start validation/test using--
+
+### Evaluation: 
+* After trainig start validation/test. Use the same model name and test frequency used at training as arguments for the following evalutation--
+* For getting MR and hit@10 for head and tail prediction:
  ```shell
+ 	python result_eval.py -model MODEL_NAME  -test_freq 25
  ```
+* For getting MR and hit@10 for relation prediction:
+```shell
+   python result_eval_relation.py -model MODEL_NAME  -test_freq 25
+```
+
 
 
 ### Citing:
