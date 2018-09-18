@@ -28,7 +28,7 @@ inference using temporal guidance, but also predicts temporal scopes for relatio
 * `time_proj.py` contains TensorFlow (1.x) based implementation of HyTE (proposed method). 
 * To start training:
   ```shell
-  python time_proj.py -data data/nyt_processed_data.pkl -class 10 -name MODEL_NAME -test_freq 25 -<other_optins> ...
+  python time_proj.py -data data/processed_data.pkl -class 10 -name MODEL_NAME -test_freq 25 -<other_optins> ...
   ```
 *  Some of the important Available options include:
   ```shell
