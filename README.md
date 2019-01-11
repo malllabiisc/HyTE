@@ -23,8 +23,7 @@ inference using temporal guidance, but also predicts temporal scopes for relatio
 
 ### Usage:
 
-* After installing python dependencies from `requirements.txt`, execute `sh setup.sh` for downloading GloVe embeddings.
-
+* After installing python dependencies from `requirements.txt`.
 * `time_proj.py` contains TensorFlow (1.x) based implementation of HyTE (proposed method). 
 * To start training:
   ```shell
