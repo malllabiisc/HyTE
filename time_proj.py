@@ -3,14 +3,14 @@ from helper import *
 from random import *
 from pprint import pprint
 import pandas as pd
-# import networkx as nx
 import scipy.sparse as sp
 import matplotlib.pyplot as plt, uuid, sys, os, time, argparse
 import pickle, pdb, operator, random, sys
 import tensorflow as tf
 from collections import defaultdict as ddict
-#from pymongo import MongoClient
 from sklearn.metrics import precision_recall_fscore_support
+
+
 YEARMIN = -50
 YEARMAX = 3000
 class HyTE(Model):
@@ -87,9 +87,7 @@ class HyTE(Model):
 			prev_year = yr+1
 		year2id[(prev_year, max(year_list))] = i + 1
 		self.year_list =year_list
-		# pdb.set_trace()
 
-		# pdb.set_trace()
 		# for k,v in entity_time.items():
 		# 	if v[0] == '####-##-##' or v[1] == '####-##-##':
 		# 		continue
@@ -427,7 +425,6 @@ class HyTE(Model):
 		print('model done')
 
 	def run_epoch(self, sess,data,epoch):
-		#sess, ph_addr, pt_addr, r_addr, nh_addr, nt_addr, self.p.batch_size, epoch
 		drop_rate = self.p.dropout
 
 		losses = []
@@ -436,14 +433,11 @@ class HyTE(Model):
 		for step, batch in enumerate(self.getBatches(data, shuffle)):
 			feed = self.create_feed_dict(batch)
 			l, a = sess.run([self.loss, self.train_op],feed_dict = feed)
-			# print(l,step)
 			losses.append(l)
-			# pdb.set_trace()
 		return np.mean(losses)
 
 
 	def fit(self, sess):
-		#self.best_val_acc, self.best_train_acc = 0.0, 0.0
 		saver = tf.train.Saver(max_to_keep=None)
 		save_dir = 'checkpoints/' + self.p.name + '/'
 		if not os.path.exists(save_dir): os.makedirs(save_dir)
@@ -458,10 +452,7 @@ class HyTE(Model):
 		validation_data = self.read_valid(self.p.test_data)
 		
 		for epoch in range(self.p.max_epochs):
-			# feed_dict = self.create_feed_dict()
-			# l, a = sess.run([self.loss, self.train_op],feed_dict = feed_dict)
 			l = self.run_epoch(sess,self.data,epoch)
-			#print(l)
 			if epoch%50 == 0:
 				print('Epoch {}\tLoss {}\t model {}'.format(epoch,l,self.p.name))
 			
@@ -527,7 +518,7 @@ class HyTE(Model):
 					
 					if i%500 == 0:
 						print('{}. no of valid_triples complete'.format(i))
-						# if i%4000 == 0 and i!=0: break
+
 				fileout_head.close()
 				fileout_tail.close()
 				fileout_rel.close()
