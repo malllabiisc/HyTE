@@ -275,6 +275,56 @@ class HyTE(Model):
 		self.data = list(zip(self.ph, self.pt, self.r , self.nh, self.nt, self.triple_time))
 		self.data = self.data + self.data[0:self.p.batch_size]
 
+	def calculated_score_for_positive_elements(self, t, epoch, f_valid):
+		loss =np.zeros(self.max_ent)
+		start_trip 	= t[3][0].split('-')[0]
+		end_trip 	= t[3][1].split('-')[0]
+		if start_trip == '####':
+			start_trip = YEARMIN
+		elif start_trip.find('#') != -1 or len(start_trip)!=4:
+			return
+
+		if end_trip == '####':
+			end_trip = YEARMAX
+		elif end_trip.find('#')!= -1 or len(end_trip)!=4:
+			return
+			
+		start_lbl, end_lbl = self.get_span_ids(start_trip, end_trip)
+		if epoch == self.p.test_freq:
+			f_valid.write(str(t[0])+'\t'+str(t[1])+'\t'+str(t[2])+'\n')
+		pos_head = sess.run(self.pos ,feed_dict = { self.pos_head:  	np.array([t[0]]).reshape(-1,1), 
+												   	self.rel:       	np.array([t[1]]).reshape(-1,1), 
+												   	self.pos_tail:	np.array([t[2]]).reshape(-1,1),
+												   	self.start_year :np.array([start_lbl]*self.max_ent),
+												   	self.end_year : np.array([end_lbl]*self.max_ent),
+												   	self.mode: 			   -1,
+												   	self.pred_mode: 1,
+												   	self.query_mode: 1})
+		pos_head = np.squeeze(pos_head)
+		
+		pos_tail = sess.run(self.pos ,feed_dict = {    self.pos_head:  	np.array([t[0]]).reshape(-1,1), 
+													   self.rel:       	np.array([t[1]]).reshape(-1,1), 
+													   self.pos_tail:	np.array([t[2]]).reshape(-1,1),
+													   self.start_year :np.array([start_lbl]*self.max_ent),
+													   self.end_year : np.array([end_lbl]*self.max_ent),
+													   self.mode: 			   -1, 
+													   self.pred_mode:  -1,
+													   self.query_mode:  1})
+		pos_tail = np.squeeze(pos_tail)
+
+
+		pos_rel = sess.run(self.pos ,feed_dict = {    self.pos_head:  	np.array([t[0]]).reshape(-1,1), 
+													   self.rel:       	np.array([t[1]]).reshape(-1,1), 
+													   self.pos_tail:	np.array([t[2]]).reshape(-1,1),
+													   self.start_year :np.array([start_lbl]*self.max_rel),
+													   self.end_year : np.array([end_lbl]*self.max_rel),
+													   self.mode: 			   -1, 
+													   self.pred_mode: -1,
+													   self.query_mode: -1})
+		pos_rel = np.squeeze(pos_rel)
+
+		return pos_head, pos_tail, pos_rel
+
 	def add_placeholders(self):
 		self.start_year = tf.placeholder(tf.int32, shape=[None], name = 'start_time')
 		self.end_year   = tf.placeholder(tf.int32, shape=[None],name = 'end_time')
@@ -447,84 +497,58 @@ class HyTE(Model):
 			save_path = os.path.join(save_dir, 'epoch_{}'.format(self.p.restore_epoch))
 			saver.restore(sess, save_path)
 		
-		print('start fitting')
-
-		validation_data = self.read_valid(self.p.test_data)
-		
-		for epoch in range(self.p.max_epochs):
-			l = self.run_epoch(sess,self.data,epoch)
-			if epoch%50 == 0:
-				print('Epoch {}\tLoss {}\t model {}'.format(epoch,l,self.p.name))
-			
-			if epoch % self.p.test_freq == 0 and epoch != 0:
-				save_path = os.path.join(save_dir, 'epoch_{}'.format(epoch))   ## -- check pointing -- ##
-				saver.save(sess=sess, save_path=save_path)
-				if epoch == self.p.test_freq:
-					f_valid  = open(save_dir_results  +'/valid.txt','w')
+		if not self.p.onlyTest:
+			print('start fitting')
+			validation_data = self.read_valid(self.p.valid_data)
+			for epoch in range(self.p.max_epochs):
+				l = self.run_epoch(sess,self.data,epoch)
+				if epoch%50 == 0:
+					print('Epoch {}\tLoss {}\t model {}'.format(epoch,l,self.p.name))
 				
-				fileout_head = open(save_dir_results +'/valid_head_pred_{}.txt'.format(epoch),'w')
-				fileout_tail = open(save_dir_results +'/valid_tail_pred_{}.txt'.format(epoch),'w')
-				fileout_rel  = open(save_dir_results +'/valid_rel_pred_{}.txt'.format(epoch), 'w')
-				for i,t in enumerate(validation_data):
-					loss =np.zeros(self.max_ent)
-					start_trip 	= t[3][0].split('-')[0]
-					end_trip 	= t[3][1].split('-')[0]
-					if start_trip == '####':
-						start_trip = YEARMIN
-					elif start_trip.find('#') != -1 or len(start_trip)!=4:
-						continue
-
-					if end_trip == '####':
-						end_trip = YEARMAX
-					elif end_trip.find('#')!= -1 or len(end_trip)!=4:
-						continue
-						
-					start_lbl, end_lbl = self.get_span_ids(start_trip, end_trip)
+				if epoch % self.p.test_freq == 0 and epoch != 0:
+					save_path = os.path.join(save_dir, 'epoch_{}'.format(epoch))   ## -- check pointing -- ##
+					saver.save(sess=sess, save_path=save_path)
 					if epoch == self.p.test_freq:
-						f_valid.write(str(t[0])+'\t'+str(t[1])+'\t'+str(t[2])+'\n')
-					pos_head = sess.run(self.pos ,feed_dict = { self.pos_head:  	np.array([t[0]]).reshape(-1,1), 
-															   	self.rel:       	np.array([t[1]]).reshape(-1,1), 
-															   	self.pos_tail:	np.array([t[2]]).reshape(-1,1),
-															   	self.start_year :np.array([start_lbl]*self.max_ent),
-															   	self.end_year : np.array([end_lbl]*self.max_ent),
-															   	self.mode: 			   -1,
-															   	self.pred_mode: 1,
-															   	self.query_mode: 1})
-					pos_head = np.squeeze(pos_head)
+						f_valid  = open(save_dir_results  +'/valid.txt','w')
 					
-					pos_tail = sess.run(self.pos ,feed_dict = {    self.pos_head:  	np.array([t[0]]).reshape(-1,1), 
-																   self.rel:       	np.array([t[1]]).reshape(-1,1), 
-																   self.pos_tail:	np.array([t[2]]).reshape(-1,1),
-																   self.start_year :np.array([start_lbl]*self.max_ent),
-																   self.end_year : np.array([end_lbl]*self.max_ent),
-																   self.mode: 			   -1, 
-																   self.pred_mode:  -1,
-																   self.query_mode:  1})
-					pos_tail = np.squeeze(pos_tail)
+					fileout_head = open(save_dir_results +'/valid_head_pred_{}.txt'.format(epoch),'w')
+					fileout_tail = open(save_dir_results +'/valid_tail_pred_{}.txt'.format(epoch),'w')
+					fileout_rel  = open(save_dir_results +'/valid_rel_pred_{}.txt'.format(epoch), 'w')
+					for i,t in enumerate(validation_data):
+						score = self.calculated_score_for_positive_elements(t, epoch, f_valid)
+						if score:
+							fileout_head.write(' '.join([str(x) for x in score[0]]) + '\n')
+							fileout_tail.write(' '.join([str(x) for x in score[1]]) + '\n')
+							fileout_rel.write (' '.join([str(x) for x in score[2]] ) + '\n')
+				
+						if i%500 == 0:
+							print('{}. no of valid_triples complete'.format(i))
 
-
-					pos_rel = sess.run(self.pos ,feed_dict = {    self.pos_head:  	np.array([t[0]]).reshape(-1,1), 
-																   self.rel:       	np.array([t[1]]).reshape(-1,1), 
-																   self.pos_tail:	np.array([t[2]]).reshape(-1,1),
-																   self.start_year :np.array([start_lbl]*self.max_rel),
-																   self.end_year : np.array([end_lbl]*self.max_rel),
-																   self.mode: 			   -1, 
-																   self.pred_mode: -1,
-																   self.query_mode: -1})
-					pos_rel = np.squeeze(pos_rel)
-					fileout_head.write(' '.join([str(x) for x in pos_head]) + '\n')
-					fileout_tail.write(' '.join([str(x) for x in pos_tail]) + '\n')
-					fileout_rel.write (' '.join([str(x) for x in pos_rel] ) + '\n')
-					
-					if i%500 == 0:
-						print('{}. no of valid_triples complete'.format(i))
-
-				fileout_head.close()
-				fileout_tail.close()
-				fileout_rel.close()
-				if epoch ==self.p.test_freq:
-					f_valid.close()
-				print("Validation Ended")
+					fileout_head.close()
+					fileout_tail.close()
+					fileout_rel.close()
+					if epoch ==self.p.test_freq:
+						f_valid.close()
+					print("Validation Ended")
+		else:
+			print('start Testing')
+			test_data = self.read_valid(self.p.test_data)
+			f_test  = open(save_dir_results  +'/test.txt','w')
+			fileout_head = open(save_dir_results +'/test_head_pred_{}.txt'.format(self.p.restore_epoch),'w')
+			fileout_tail = open(save_dir_results +'/test_tail_pred_{}.txt'.format(self.p.restore_epoch),'w')
+			fileout_rel  = open(save_dir_results +'/test_rel_pred_{}.txt'.format(self.p.restore_epoch), 'w')
+			for i,t in enumerate(test_data):
+				score = self.calculated_score_for_positive_elements(t, self.p.restore_epoch, f_test)
+				fileout_head.write(' '.join([str(x) for x in score[0]]) + '\n')
+				fileout_tail.write(' '.join([str(x) for x in score[1]]) + '\n')
+				fileout_rel.write (' '.join([str(x) for x in score[2]] ) + '\n')
+		
+				if i%500 == 0:
+					print('{}. no of test_triples complete'.format(i))
+			fileout_head.close()
+			fileout_tail.close()
+			fileout_rel.close()
+			print("Test ended")
 
 if __name__== "__main__":
 	print('here in main')
@@ -549,13 +573,15 @@ if __name__== "__main__":
 	parser.add_argument('-inp_dim',  dest="inp_dim", 	default = 128,   	type=int, 	help='Hidden state dimension of Bi-LSTM')
 	parser.add_argument('-L1_flag',  dest="L1_flag", 	action='store_false',   	 	help='Hidden state dimension of FC layer')
 	parser.add_argument('-onlytransE', dest="onlytransE", 	action='store_true', 		help='Evaluate model on only transE loss')
+	parser.add_argument('-onlyTest', dest="onlyTest", 	action='store_true', 		help='Evaluate model for test data')
 	parser.add_argument('-restore',	 dest="restore", 	action='store_true', 		help='Restore from the previous best saved model')
 	parser.add_argument('-res_epoch',	     dest="restore_epoch", 	default=200,   type =int,		help='Restore from the previous best saved model')
 	args = parser.parse_args()
 	args.dataset = 'data/'+ args.data_type +'/'+ args.version+'/train.txt'
 	args.entity2id = 'data/'+ args.data_type +'/'+ args.version+'/entity2id.txt'
 	args.relation2id = 'data/'+ args.data_type +'/'+ args.version+'/relation2id.txt'
-	args.test_data  =  'data/'+ args.data_type +'/'+ args.version+'/valid.txt'
+	args.valid_data  =  'data/'+ args.data_type +'/'+ args.version+'/valid.txt'
+	args.test_data  =  'data/'+ args.data_type +'/'+ args.version+'/test.txt'
 	args.triple2id  =   'data/'+ args.data_type +'/'+ args.version+'/triple2id.txt'
 	if not args.restore: args.name = args.name + '_' + time.strftime("%d_%m_%Y") + '_' + time.strftime("%H:%M:%S")
 	tf.set_random_seed(args.seed)

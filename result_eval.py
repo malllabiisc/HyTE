@@ -2,6 +2,7 @@ import numpy as np
 import argparse,pdb
 parser = argparse.ArgumentParser(description='Eval model outputs')
 parser.add_argument('-model', 	 	dest = "model", required=True,				help='Dataset to use')
+parser.add_argument('-eval_mode', 	 	dest = "eval_mode", required=True,		help='To evaluate test or validation')
 parser.add_argument('-test_freq', 	dest = "freq", 	required=True,	type =int,  help='what is to be predicted')
 
 #parser.add_argument('-entity2id'  , dest="entity2id", 		required=True,			help='Entity 2 id')
@@ -11,9 +12,9 @@ args = parser.parse_args()
 	
 print(args.model)
 for k in range(args.freq,30000,args.freq):
-	valid_output = open('results/'+args.model+'/valid.txt')
-	model_output_head = open('results/'+args.model+'/valid_head_pred_{}.txt'.format(k))
-	model_output_tail = open('results/'+args.model+'/valid_tail_pred_{}.txt'.format(k))
+	valid_output = open('results/'+args.model+'/'+args.eval_mode+'.txt')
+	model_output_head = open('results/'+args.model+'/'+args.eval_mode+'_head_pred_{}.txt'.format(k))
+	model_output_tail = open('results/'+args.model+'/'+args.eval_mode+'_tail_pred_{}.txt'.format(k))
 	model_out_head = []
 	model_out_tail = []
 	count = 0
