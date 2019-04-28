@@ -1,5 +1,5 @@
 import numpy as np
-import argparse,pdb
+import argparse,pdb, sys
 parser = argparse.ArgumentParser(description='Eval model outputs')
 parser.add_argument('-model', 	 	dest = "model", required=True,				help='Dataset to use')
 parser.add_argument('-eval_mode', 	 	dest = "eval_mode", required=True,		help='To evaluate test or validation')
@@ -9,7 +9,7 @@ parser.add_argument('-test_freq', 	dest = "freq", 	required=True,	type =int,  he
 #parser.add_argument('-relation2id', dest="relation2id", 	required=True,			help=' relation to id')
 args = parser.parse_args()
 
-	
+best_rank = sys.maxsize	
 print(args.model)
 for k in range(args.freq,30000,args.freq):
 	valid_output = open('results/'+args.model+'/'+args.eval_mode+'.txt')
@@ -66,3 +66,11 @@ for k in range(args.freq,30000,args.freq):
 		ranks_head.append(final_out_head[i][int(row.split()[0])])
 		ranks_tail.append(final_out_tail[i][int(row.split()[2])])
 	print('Epoch {} :  test_tail rank {}\t test_head rank {}'.format(k ,np.mean(np.array(ranks_tail))+1, np.mean(np.array(ranks_head))+1))
+
+	if eval_mode == 'valid':
+		if np.mean(np.array(rank_tail)) < best_rank:
+			best_rank = np.mean(np.array(rank_tail))
+			best_epoch = k
+		print('------------------------------------------')
+		print('best validation rank till now {} at Epoch {}'. format(best_rank, best_epoch))
+		print('------------------------------------------')
