@@ -1,4 +1,3 @@
-from pymongo import MongoClient
 import numpy as np, sys, unicodedata, requests, os, random, pdb, requests, json
 from random import randint
 from pprint import pprint
@@ -6,8 +5,6 @@ import logging, logging.config, itertools, pathlib
 from sklearn.metrics import precision_recall_fscore_support
 
 np.set_printoptions(precision=4)
-# c_dosa 	 = MongoClient('mongodb://10.24.28.104:27017/')
-# db_word2vec 	= c_dosa['word2vec']['google_news_300']
 
 def checkFile(filename):
 	return pathlib.Path(filename).is_file()

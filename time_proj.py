@@ -4,7 +4,7 @@ from random import *
 from pprint import pprint
 import pandas as pd
 import scipy.sparse as sp
-import matplotlib.pyplot as plt, uuid, sys, os, time, argparse
+import uuid, sys, os, time, argparse
 import pickle, pdb, operator, random, sys
 import tensorflow as tf
 from collections import defaultdict as ddict
@@ -191,7 +191,7 @@ class HyTE(Model):
 
 		# self.start_time['triple'], self.end_time['triple'] = self.create_year2id(triple_time,'triple')
 
-		with open(self.p.entity2id,'r') as filein2:
+		with open(self.p.entity2id,'r', encoding="utf-8") as filein2:
 			for line in filein2:
 				# entity_time[int(line.split('\t')[1])]=[x.split()[0] for x in line.split()[2:4]]
 				max_ent = max_ent+1
