@@ -58,17 +58,17 @@ inference using temporal guidance, but also predicts temporal scopes for relatio
 ```shell
    python result_eval_relation.py -eval_mode valid -model yago_data_neg_sample_5_mar_10_l2_0.00  -test_freq 5
 ```
-The Evaluation run will output the `Best Validation Rank` and the corresponding `Best Validation Epoch` when it was achieved. Note them down for obtaining results on test set. 
+The Evaluation run will output the **`Best Validation Rank`** and the corresponding **`Best Validation Epoch`** when it was achieved. Note them down for obtaining results on test set. 
 
 ### Testing:
 * Test after validation using the best validation weights.
 * First run the `time_proj.py` script once to restore parameters and then dump the predictions corresponding the the test set.
 ```shell
- python time_proj.py -name yago_data_neg_sample_5_mar_10_l2_0.00 -margin 10 -l2 0.00 -neg_sample 5 -gpu 0 -data_type yago -version large -onlyTest -res_epoch `Best Validation Epoch`-restore
+ python time_proj.py -res_epoch **`Best Validation Epoch`** -onlyTest -restore -name yago_data_neg_sample_5_mar_10_l2_0.00 -margin 10 -l2 0.00 -neg_sample 5 -gpu 0 -data_type yago -version large
 ```
 * Now evaluate the test predictions to obtain MR and hits@10 using
 ```shell
-python result_eval.py -eval_mode test -test_freq `Best Validation Epoch` -model yago_data_neg_sample_5_mar_10_l2_0.00
+python result_eval.py -eval_mode test -test_freq **`Best Validation Epoch` ** -model yago_data_neg_sample_5_mar_10_l2_0.00
 ```
 
 
