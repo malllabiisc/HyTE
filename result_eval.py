@@ -65,7 +65,7 @@ for k in range(args.freq,30000,args.freq):
 	for i,row in enumerate(valid_output):
 		ranks_head.append(final_out_head[i][int(row.split()[0])])
 		ranks_tail.append(final_out_tail[i][int(row.split()[2])])
-	print('Epoch {} : test_tail rank {}\t test_head rank {}'.format(k ,np.mean(np.array(ranks_tail))+1, np.mean(np.array(ranks_head))+1))
+	print('Epoch {} : {}_tail rank {}\t {}_head rank {}'.format(k, args.eval_mode, np.mean(np.array(ranks_tail))+1, np.mean(np.array(ranks_head))+1))
 
 	tail_array = np.array(ranks_tail)
 	head_array = np.array(ranks_head)
@@ -73,7 +73,7 @@ for k in range(args.freq,30000,args.freq):
 	hit_at_10_tail = tail_array[np.where(tail_array < 10)]
 	hit_at_10_head = head_array[np.where(head_array < 10)]
 
-	print('Epoch {} : test_tail HIT@10 {}\t test_head HIT@!) {}'.format(k ,len(hit_at_10_tail)/float(len(tail_array))*100, len(hit_at_10_head)/float(len(head_array))*100))
+	print('Epoch {} : {}_tail HIT@10 {}\t {}_head HIT@!) {}'.format(k, args.eval_mode, len(hit_at_10_tail)/float(len(tail_array))*100, len(hit_at_10_head)/float(len(head_array))*100))
 	
 	if args.eval_mode == 'valid':
 		if np.mean(np.array(ranks_tail))+1 < best_rank:
