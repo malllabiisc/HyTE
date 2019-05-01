@@ -275,7 +275,7 @@ class HyTE(Model):
 		self.data = list(zip(self.ph, self.pt, self.r , self.nh, self.nt, self.triple_time))
 		self.data = self.data + self.data[0:self.p.batch_size]
 
-	def calculated_score_for_positive_elements(self, t, epoch, f_valid):
+	def calculated_score_for_positive_elements(self, t, epoch, f_valid, eval_mode='valid'):
 		loss =np.zeros(self.max_ent)
 		start_trip 	= t[3][0].split('-')[0]
 		end_trip 	= t[3][1].split('-')[0]
@@ -290,8 +290,11 @@ class HyTE(Model):
 			return
 			
 		start_lbl, end_lbl = self.get_span_ids(start_trip, end_trip)
-		if epoch == self.p.test_freq:
+		if eval_mode == 'test':
 			f_valid.write(str(t[0])+'\t'+str(t[1])+'\t'+str(t[2])+'\n')
+		elif eval_mode == 'valid' and epoch == self.p.test_freq:
+			f_valid.write(str(t[0])+'\t'+str(t[1])+'\t'+str(t[2])+'\n')
+
 		pos_head = sess.run(self.pos ,feed_dict = { self.pos_head:  	np.array([t[0]]).reshape(-1,1), 
 												   	self.rel:       	np.array([t[1]]).reshape(-1,1), 
 												   	self.pos_tail:	np.array([t[2]]).reshape(-1,1),
@@ -515,7 +518,7 @@ class HyTE(Model):
 					fileout_tail = open(save_dir_results +'/valid_tail_pred_{}.txt'.format(epoch),'w')
 					fileout_rel  = open(save_dir_results +'/valid_rel_pred_{}.txt'.format(epoch), 'w')
 					for i,t in enumerate(validation_data):
-						score = self.calculated_score_for_positive_elements(t, epoch, f_valid)
+						score = self.calculated_score_for_positive_elements(t, epoch, f_valid, 'valid')
 						if score:
 							fileout_head.write(' '.join([str(x) for x in score[0]]) + '\n')
 							fileout_tail.write(' '.join([str(x) for x in score[1]]) + '\n')
@@ -538,7 +541,7 @@ class HyTE(Model):
 			fileout_tail = open(save_dir_results +'/test_tail_pred_{}.txt'.format(self.p.restore_epoch),'w')
 			fileout_rel  = open(save_dir_results +'/test_rel_pred_{}.txt'.format(self.p.restore_epoch), 'w')
 			for i,t in enumerate(test_data):
-				score = self.calculated_score_for_positive_elements(t, self.p.restore_epoch, f_test)
+				score = self.calculated_score_for_positive_elements(t, self.p.restore_epoch, f_test, 'test')
 				fileout_head.write(' '.join([str(x) for x in score[0]]) + '\n')
 				fileout_tail.write(' '.join([str(x) for x in score[1]]) + '\n')
 				fileout_rel.write (' '.join([str(x) for x in score[2]] ) + '\n')
