@@ -61,7 +61,7 @@ for k in range(args.freq,30000,args.freq):
 	
 	ranks_head = []
 	ranks_tail = []
-	
+
 	for i,row in enumerate(valid_output):
 		ranks_head.append(final_out_head[i][int(row.split()[0])])
 		ranks_tail.append(final_out_tail[i][int(row.split()[2])])
@@ -78,8 +78,10 @@ for k in range(args.freq,30000,args.freq):
 	
 	if args.eval_mode == 'valid':
 		if (np.mean(np.array(ranks_tail))+1 + np.mean(np.array(ranks_tail))+1)/2 < best_rank:
-			best_rank = (np.mean(np.array(ranks_tail))+1 + np.mean(np.array(ranks_tail))+1)/2
+			best_rank = (np.mean(np.array(ranks_tail))+1 + np.mean(np.array(ranks_head))+1)/2
 			best_epoch = k
+			best_tail_rank = np.mean(np.array(ranks_tail))+1
+			best_head_rank = np.mean(np.array(ranks_head))+1
 		print('------------------------------------------')
-		print('Best Validation Epoch till now Epoch {}, tail rank: {}, head rank: {}'. format(best_epoch, np.mean(np.array(ranks_tail))+1, np.mean(np.array(ranks_head))+1))
+		print('Best Validation Epoch till now Epoch {}, tail rank: {}, head rank: {}'. format(best_epoch, best_tail_rank, best_head_rank))
 		print('------------------------------------------')
