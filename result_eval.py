@@ -77,7 +77,7 @@ for k in range(args.freq,30000,args.freq):
 	print('Epoch {} : {}_tail HIT@10 {}\t {}_head HIT@!) {}'.format(k, args.eval_mode, len(hit_at_10_tail)/float(len(tail_array))*100, args.eval_mode, len(hit_at_10_head)/float(len(head_array))*100))
 	
 	if args.eval_mode == 'valid':
-		if (np.mean(np.array(ranks_tail))+1 + np.mean(np.array(ranks_tail))+1)/2 < best_rank:
+		if (np.mean(np.array(ranks_tail))+1 + np.mean(np.array(ranks_head))+1)/2 < best_rank:
 			best_rank = (np.mean(np.array(ranks_tail))+1 + np.mean(np.array(ranks_head))+1)/2
 			best_epoch = k
 			best_tail_rank = np.mean(np.array(ranks_tail))+1
