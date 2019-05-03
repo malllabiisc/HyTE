@@ -64,11 +64,11 @@ The Evaluation run will output the **`Best Validation Rank`** and the correspond
 * Test after validation using the best validation weights.
 * First run the `time_proj.py` script once to restore parameters and then dump the predictions corresponding the the test set.
 ```shell
- python time_proj.py -res_epoch **Best Validation Epoch** -onlyTest -restore -name yago_data_neg_sample_5_mar_10_l2_0.00 -margin 10 -l2 0.00 -neg_sample 5 -gpu 0 -data_type yago -version large
+ python time_proj.py -res_epoch `Best Validation Epoch` -onlyTest -restore -name yago_data_neg_sample_5_mar_10_l2_0.00 -margin 10 -l2 0.00 -neg_sample 5 -gpu 0 -data_type yago -version large
 ```
 * Now evaluate the test predictions to obtain MR and hits@10 using
 ```shell
-python result_eval.py -eval_mode test -test_freq **Best Validation Epoch** -model yago_data_neg_sample_5_mar_10_l2_0.00
+python result_eval.py -eval_mode test -test_freq `Best Validation Epoch` -model yago_data_neg_sample_5_mar_10_l2_0.00
 ```
 
 

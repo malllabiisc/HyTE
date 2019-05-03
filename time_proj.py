@@ -586,7 +586,7 @@ if __name__== "__main__":
 	args.valid_data  =  'data/'+ args.data_type +'/'+ args.version+'/valid.txt'
 	args.test_data  =  'data/'+ args.data_type +'/'+ args.version+'/test.txt'
 	args.triple2id  =   'data/'+ args.data_type +'/'+ args.version+'/triple2id.txt'
-	if not args.restore: args.name = args.name + '_' + time.strftime("%d_%m_%Y") + '_' + time.strftime("%H:%M:%S")
+	# if not args.restore: args.name = args.name + '_' + time.strftime("%d_%m_%Y") + '_' + time.strftime("%H:%M:%S")
 	tf.set_random_seed(args.seed)
 	random.seed(args.seed)
 	np.random.seed(args.seed)
