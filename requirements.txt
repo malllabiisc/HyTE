@@ -1,4 +1,4 @@
-tensorflow==1.6.0
+tensorflow==1.8.0
 requests>=2.20.0
 scipy==1.0.0
 numpy==1.14.3
